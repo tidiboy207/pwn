@@ -5,7 +5,7 @@ echo "alias ida='/mnt/c/Users/ASUS/Downloads/IDA\ 7.7\ all\ decompiler/IDA\ 7.7/
 # ret2win_chall_demo_file
 
 #ret2win.c
-```jsx
+```
 #include <stdio.h>
 #include <string.h>
 
