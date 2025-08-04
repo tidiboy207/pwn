@@ -21,10 +21,17 @@ int main() {
 }
 ```
 
+## Lỗ hổng nằm trong hàm `vulnerable`:
+- Khai báo mảng `buffer` có kích thước 32 byte.
+- Sử dụng hàm `fgets` để đọc dữ liệu từ người dùng, với tham số thứ hai là 100, nghĩa là sẽ đọc tối đa 100 byte (bao gồm cả ký tự null) vào `buffer`.
+- Vấn đề: `buffer` chỉ có 32 byte, nhưng `fgets` cho phép đọc đến 100 byte. Điều này dẫn đến tràn bộ đệm (buffer overflow) nếu người dùng nhập nhiều hơn 31 ký tự.
+- Hậu quả: Dữ liệu nhập vào vượt quá 32 byte sẽ ghi đè lên các vùng nhớ khác trên stack, bao gồm cả địa chỉ trở về (return address) của hàm `vulnerable`. Khi hàm `vulnerable` kết thúc, nó sẽ trả về địa chỉ mà chúng ta đã ghi đè, từ đó cho phép điều khiển luồng thực thi của chương trình.
 
 
 
-## Kiểm tra bảo mật
+
+
+## Kiểm tra bảo mật 
 ### Cài pwntools
 ```bash
 pip install pwntools
@@ -34,6 +41,14 @@ pip install pwntools
 checksec chall1
 ```
 
+ **Mục đích: phân tích cơ chế bảo mật của file thực thi:**
+- NX (No-execute): Ngăn chặn thực thi code trên stack
+- Stack Canary: Phát hiện tràn bộ đệm
+- PIE (Position Independent Executable): Random hóa địa chỉ → Cần tắt để sử dụng địa chỉ cố định
+
+→ ret2win chỉ khả thi khi không có Stack Canary và PIE tắt.
+
+
 
 ## Tạo pattern 100 kí tự
 ```bash
@@ -41,15 +56,15 @@ cyclic 100
 ```
 
 
-## Khi chương trình crash, kiểm tra giá trị EIP/RIP:
+## Khi chương trình crash, kiểm tra giá trị RIP:
 ```bash
 info registers rip
 ```
 
 
-## Tìm offset từ giá trị EIP/RIP:
+## Tìm offset từ giá trị RIP:
 ```bash
-cyclic -l <giá_trị_eip/rip>
+cyclic -l <giá_trị_rip>
 ```
 
 
