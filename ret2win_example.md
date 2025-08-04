@@ -83,7 +83,7 @@ p & win
 ## Viết script (solve1.py)
 ```python
 from pwn import *
-
+exe = ELF("./chall1", checksec = False)
 p = process('./chall_ret2win')
 
 offset = 40                    #Độ dài offset
