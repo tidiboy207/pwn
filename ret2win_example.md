@@ -31,16 +31,19 @@ int main() {
 
 
 
-## Kiểm tra bảo mật 
-### Cài pwntools
-```bash
-pip install pwntools
-```
+## Kiểm tra chế độ bảo vệ
 ### checksec file
 ```bash
 checksec chall1
 ```
-
+**Kết quả**
+```
+Arch:       amd64-64-little
+RELRO:      Partial RELRO
+Stack:      No canary found
+NX:         NX unknown - GNU_STACK missing
+PIE:        No PIE (0x400000)
+```
  **Mục đích: phân tích cơ chế bảo mật của file thực thi:**
 - NX (No-execute): Ngăn chặn thực thi code trên stack
 - Stack Canary: Phát hiện tràn bộ đệm
