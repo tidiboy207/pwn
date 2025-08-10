@@ -143,6 +143,7 @@ RBP  0x404900
 rbp         0x7ffce1907cf0 —▸ 0x7ffce1907d10
 ```
 * Ta thấy lúc này overwrite được rbp của hàm main, sau khi về hàm `main` thì rbp nhận giá trị mà ta đã overwrite.
+* (Còn tiếp)
 
 
 
